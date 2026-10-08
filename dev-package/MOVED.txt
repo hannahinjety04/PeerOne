@@ -1,0 +1,8 @@
+MOVED
+
+The development download package is now the real folder:
+
+  swopblock-dev/
+
+Open that folder in File Explorer — it matches the zip 1:1.
+download-dev.php zips swopblock-dev/ only.

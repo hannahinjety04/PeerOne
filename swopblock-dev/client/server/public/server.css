@@ -1,0 +1,169 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #070b14;
+    --card: #0f1628;
+    --text: #eef2ff;
+    --muted: #8b9cc0;
+    --accent: #4f8cff;
+    --accent-hover: #3a78eb;
+    --border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+}
+
+.install-only {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(79, 140, 255, 0.14), transparent),
+        var(--bg);
+}
+
+.install-card {
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 36px;
+}
+
+.brand {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.install-card h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+}
+
+.tagline {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 36px;
+}
+
+.btn-install {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 8px 32px rgba(79, 140, 255, 0.3);
+}
+
+.btn-install:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.fine-print {
+    margin-top: 18px;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* Install progress page */
+.install-progress {
+    flex: 1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 60px 20px 80px;
+}
+
+.install-progress h1 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+.install-progress .lead {
+    color: var(--muted);
+    margin-bottom: 32px;
+}
+
+.step-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.step-box h2 {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+
+.step-box p,
+.step-box ol {
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.step-box ol {
+    margin-top: 8px;
+    padding-left: 20px;
+}
+
+.step-box code {
+    display: block;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #070b14;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--text);
+    word-break: break-all;
+}
+
+.back-home {
+    display: inline-block;
+    margin-top: 28px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-home:hover {
+    text-decoration: underline;
+}

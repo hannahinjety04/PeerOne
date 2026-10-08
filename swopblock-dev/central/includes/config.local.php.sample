@@ -1,0 +1,18 @@
+<?php
+/**
+ * Example local overrides for includes/config.php
+ * Copy to includes/config.local.php and edit if needed.
+ *
+ * Production (MySQL): omit db_driver or set 'mysql'
+ * Local development package: use sqlite as shown below
+ */
+return [
+    // 'db_driver' => 'sqlite',
+    // 'db_path' => dirname(__DIR__) . '/data/central.db',
+
+    'db_host' => 'localhost',
+    'db_name' => 'server_schema',
+    'db_user' => 'root',
+    'db_pass' => '',
+    'admin_email' => 'owner@central.local',
+];

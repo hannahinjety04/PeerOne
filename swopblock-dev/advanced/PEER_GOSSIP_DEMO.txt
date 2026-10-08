@@ -1,0 +1,19 @@
+Peer gossip demo (optional)
+===========================
+
+Your normal install still uses only:
+  install-dev.bat
+  start-central.bat
+  start-client.bat
+  register-client.bat
+
+Peer sync is included automatically when start-client.bat runs
+(it opens a background gossip window for node 1).
+
+To show two nodes sharing marketplace info:
+1. Start node 1 as usual (start-client.bat) and create an order
+2. Double-click start-peer-demo.bat  (one click)
+3. Wait about a minute
+4. Open http://127.0.0.1:8082 — the order should appear
+
+Advanced scripts live in the advanced\ folder if needed.

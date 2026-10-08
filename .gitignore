@@ -1,0 +1,17 @@
+# Local databases and test output
+*.db
+*.sqlite
+tree/*.bin
+**/data/
+**/data-node2/
+**/data-smoke-*/
+
+# Bundled PHP runtime (the installer sets this up)
+**/runtime/
+
+# Local-only settings and secret keys
+**/config.local.php
+*.key
+*.pem
+keys/
+*.log
