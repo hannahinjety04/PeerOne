@@ -7,11 +7,13 @@ require_once __DIR__ . '/UpdateTree.php'; // code can't identify what SystemRoot
 class TreeLog //starts the blueprint 
 {
     public const MAGIC = 'ULOG'; // the 4 letters written at the start of every log file that labels the file as "your log file" 
-    public const VERSION = 3; // format version 
+    public const VERSION = 4; // format version 
     public const HEADER_SIZE = 8; // the header is ULOG which is 4 bytes + version which is 4 bytes, equal to 8 bytes; records start after that
     public const HASH_SIZE = 32; // size of the hash in bytes
 
     public const STRUCTURAL_SIZE = 8 + self::HASH_SIZE; // checks that section isnt broken
+
+    public const SIGNATURE_SIZE = 64; // Ed25519 signature is always exactly 64 bytes, use that number to check authorization section is right size
 
     public const TYPE_CODES = [ //lookup list that turns class names into numbers
         'Update' => 1, 
@@ -30,11 +32,19 @@ class TreeLog //starts the blueprint
     private array $hashes = []; // the hash of each record, in the same order as $built and $offsets
     private array $sections = []; // holds each record's three section sizes so test can print them
 
+    private string $publicKey; //the key used to check signatures
+    private ?string $secretKey; // the key used to make signatures
+
  
-    public function __construct(string $path)
-    {
-        $this->path = $path; // saves the path into the object
-        $this->lastHash = str_repeat("\0", self::HASH_SIZE); // starts with 32 zero bytes, the hash of nothing
+    public function __construct(string $path, string $publicKey, ?string $secretKey = null)
+{
+    if ($secretKey !== null && sodium_crypto_sign_publickey_from_secretkey($secretKey) !== $publicKey) { //sodum crypto function pulls out secret key so it can be compared with the public key given
+        throw new RuntimeException("Secret key doesn't match public key");
+    }
+    $this->publicKey = $publicKey;
+    $this->secretKey = $secretKey;
+    $this->path = $path; // saves the path into the object
+    $this->lastHash = str_repeat("\0", self::HASH_SIZE); // starts with 32 zero bytes, the hash of nothing
 
         $buffer = is_file($path) ? file_get_contents($path) : ''; // if the file exists, read the whole thing into $buffer, if not use empty text
         if ($buffer === false) {
@@ -56,6 +66,10 @@ class TreeLog //starts the blueprint
 
     public function append(Update $update): void // takes one update (append) and doesnt give back anything (void)
     {
+        if ($this->secretKey === null) {
+            throw new RuntimeException('No secret key, this log is read-only');
+        }
+
         if (isset($this->indexOf[spl_object_id($update)])) { // is ID number for this object in memory (indexOf)
             throw new RuntimeException('This update is already in the log'); // if the eobject is already in memory, stop so the update isnt written twice
         }
@@ -71,9 +85,11 @@ class TreeLog //starts the blueprint
 
         $structural = pack('VV', self::TYPE_CODES[$class], $update->seq) . $this->lastHash;
         $semantic = $update->label;
-        $authorization = '';
+        $signed = self::section($structural) . self::section($semantic);
+        $authorization = sodium_crypto_sign_detached($signed, $this->secretKey);
+        $body = $signed . self::section($authorization);
 
-        $body = self::section($structural) . self::section($semantic) . self::section($authorization);
+        
         $record = pack('V', strlen($body)) . $body; // builds the full record: body's length, packed into 4 bytes, placed in front of body
 
         if(file_put_contents($this->path, $record, FILE_APPEND | LOCK_EX) === false) {
@@ -151,6 +167,13 @@ class TreeLog //starts the blueprint
             $i = count($this->built); // the record's position, how many updates are already built
             if($prevHash !== $this->lastHash) { 
                 throw new RuntimeException("Hash chain broken at record {$i}");// if the previous hash in the record does not match the last hash, then the file was changed by something else, so stop with an error
+            }
+            if (strlen($authorization) !== self::SIGNATURE_SIZE) { //check if authorization section is exactly 4 bytes
+                throw new RuntimeException("Missing signature at record {$i}"); //stop 
+            }
+            $signed = self::section($structural) . self::section($semantic); // rebuilds the exact bytes that append() signed
+            if (!sodium_crypto_sign_verify_detached($authorization, $signed, $this->publicKey)) { // the check; takes the signature, bytes, and public key
+                throw new RuntimeException("Bad signature at record {$i}");
             }
 
             $class = $classFor[$rec['type']] ?? null; // turns the type number back into a class name 
